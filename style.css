@@ -1,6 +1,57 @@
 body {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+}
+
+#menu {
+  background-color: green;
+  float: right;
+  height: 720px;
+  width: 720px;
+}
+
+#number {
+  font-size: 50px;
+  color: black;
+  font-weight: bold;
+}
+
+#minus {
+  height: 40px;
+  width: 200px;
+  padding: 10px;
+  border: 2px solid black;
+  float: left;
+  margin-right: 5px;
+  margin-left: 10px;
+  border-radius: 25px;
+}
+
+#minus:disabled {
+  background-color: gray;
+  color: aliceblue;
+}
+
+#plus {
+  height: 40px;
+  width: 200px;
+  padding: 10px;
+  border: 2px solid black;
+  margin-left: 5px;
+  border-radius: 25px;
+}
+
+#plus:disabled {
+  background-color: gray;
+  color: aliceblue;
+}
+
+#start {
+  height: 40px;
+  width: 200px;
+  padding: 10px;
+  border: 2px solid black;
+  border-radius: 25px;
 }
