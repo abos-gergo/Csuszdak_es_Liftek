@@ -1,0 +1,5 @@
+y koordináta lekérése, elosztása 72vel:
+ha a kapott szám páros: balról jobbra
+ha a kapott szám páratlan: jobbról balra
+adott mező a sorban: páros 648-x
+		     páratlant 0+x

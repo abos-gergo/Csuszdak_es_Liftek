@@ -1,11 +1,12 @@
 var background;
 var player1;
 var player2;
+// const number = document.querySelector('.number');
 
 function startGame() {
     background = new GameObject(720, 720, "Assets/Background.png", 0, 0, "image");
-    player1 = new GameObject(30, 30, "green", 10, 120);
-    player2 = new GameObject(100, 100, "red", 0, 620);
+    player1 = new GameObject(30, 30, "green", 0, 144);
+    player2 = new GameObject(30, 30, "red", 0, 648);
     myGameArea.start();
 }
 
@@ -52,4 +53,19 @@ function updateGameArea() {
     background.update();
     player1.update();
     player2.update();
+}
+
+function adottMezo(player1) {
+    var x = player1.x;
+    var y = player1.y;
+    var emelet = 10 - (y / 72);
+    var mezo = x + 72;
+    if (emelet % 2 == 0){
+        mezo = x / 72;
+    }
+    else {
+        mezo = (720 - x) / 72;
+    }
+    var akt_mezo = (emelet * 10) + mezo;
+    console.log(akt_mezo);
 }
