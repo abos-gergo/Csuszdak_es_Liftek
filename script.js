@@ -8,6 +8,7 @@ function startGame() {
     player1 = new GameObject(30, 30, "green", 0, 144);
     player2 = new GameObject(30, 30, "red", 0, 648);
     myGameArea.start();
+    console.log(tileNumberToScreenPosition(90));
 }
 
 var myGameArea = {
@@ -55,17 +56,14 @@ function updateGameArea() {
     player2.update();
 }
 
-function adottMezo(player1) {
-    var x = player1.x;
-    var y = player1.y;
-    var emelet = 10 - (y / 72);
-    var mezo = x + 72;
-    if (emelet % 2 == 0){
-        mezo = x / 72;
+function tileNumberToScreenPosition(number){
+    tileIndex = number - 1;
+    tileY = Math.floor(tileIndex / 10);
+    tileFloor = 9 - tileY;
+
+    tileX = (tileIndex % 10);
+    if (tileFloor % 2 == 0){
+        tileX = 9 - tileX;
     }
-    else {
-        mezo = (720 - x) / 72;
-    }
-    var akt_mezo = (emelet * 10) + mezo;
-    console.log(akt_mezo);
+    return [tileX * 108, tileFloor * 108];
 }
