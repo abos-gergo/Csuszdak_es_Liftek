@@ -1,12 +1,14 @@
 var background;
 var player1;
 var player2;
+// const number = document.querySelector('.number');
 
 function startGame() {
     background = new GameObject(1080, 1080, "Assets/Background.png", 0, 0, "image");
     player1 = new GameObject(30, 30, "green", 10, 120);
     player2 = new GameObject(100, 100, "red", 0, 620);
     myGameArea.start();
+    console.log(tileNumberToScreenPosition(90));
 }
 
 var myGameArea = {
@@ -52,4 +54,16 @@ function updateGameArea() {
     background.update();
     player1.update();
     player2.update();
+}
+
+function tileNumberToScreenPosition(number){
+    tileIndex = number - 1;
+    tileY = Math.floor(tileIndex / 10);
+    tileFloor = 9 - tileY;
+
+    tileX = (tileIndex % 10);
+    if (tileFloor % 2 == 0){
+        tileX = 9 - tileX;
+    }
+    return [tileX * 108, tileFloor * 108];
 }
