@@ -55,3 +55,15 @@ body {
   border: 2px solid black;
   border-radius: 25px;
 }
+
+#x-position {
+  color: beige;
+  font-size: 25px;
+  font-style: italic;
+}
+
+#y-position {
+  color: beige;
+  font-size: 25px;
+  font-style: italic;
+}
