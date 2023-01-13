@@ -1,14 +1,25 @@
 var background;
 var player1;
 var player2;
-// const number = document.querySelector('.number');
+var number = 1;
+var text = document.querySelector("#number");
+text.innerHTML = `${number}db játékos`;
+var decreaseButton = document.querySelector("#minus");
+decreaseButton.innerHTML = "Csökkentés";
+var increaseButton = document.querySelector("#plus");
+increaseButton.innerHTML = "Növelés";
+var startButton = document.querySelector("#start");
+startButton.innerHTML = "Játék indítása!";
+var MousePositionX = document.querySelector("#x-position");
+MousePositionX.innerHTML = "Pozíció X: ";
+var MousePositionY = document.querySelector("#y-position");
+MousePositionX.innerHTML = "Pozíció Y: ";
 
 function startGame() {
-    background = new GameObject(1080, 1080, "Assets/Background.png", 0, 0, "image");
-    player1 = new GameObject(30, 30, "green", 10, 120);
-    player2 = new GameObject(100, 100, "red", 0, 620);
-    myGameArea.start();
-    console.log(tileNumberToScreenPosition(90));
+  background = new GameObject(720, 720, "Assets/Background.png", 0, 0, "image");
+  player1 = new GameObject(30, 30, "green", 10, 120);
+  player2 = new GameObject(100, 100, "red", 0, 620);
+  myGameArea.start();
 }
 
 var myGameArea = {
@@ -27,34 +38,63 @@ var myGameArea = {
 }
 
 function GameObject(width, height, color, x, y, type) {
-    if (type == "image") {
-        this.img = new Image();
-        this.img.src = color;
-    }
-    this.type = type;
-    this.width = width;
-    this.height = height;
-    this.x = x;
-    this.y = y;
+  if (type == "image") {
+    this.img = new Image();
+    this.img.src = color;
+  }
+  this.type = type;
+  this.width = width;
+  this.height = height;
+  this.x = x;
+  this.y = y;
 
-    this.update = function(){
-        ctx = myGameArea.context;
-        if (this.type == "image") {
-            ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-        }
-        else {
-            ctx.fillStyle = color;
-            ctx.fillRect(this.x, this.y, this.width, this.height);
-        }
+  this.update = function () {
+    ctx = myGameArea.context;
+    if (this.type == "image") {
+      ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+    } else {
+      ctx.fillStyle = color;
+      ctx.fillRect(this.x, this.y, this.width, this.height);
     }
+  };
 }
 
 function updateGameArea() {
-    myGameArea.clear();
-    background.update();
-    player1.update();
-    player2.update();
+  myGameArea.clear();
+  background.update();
+  player1.update();
+  player2.update();
 }
+
+function DecreasePlayer() {
+  if (number > 1 && number <= 4) {
+    number = number - 1;
+    text.innerHTML = `${number}db játékos`;
+  }
+}
+
+function IncreasePlayer() {
+  if (number >= 1 && number < 4) {
+    number = number + 1;
+    text.innerHTML = `${number}db játékos`;
+  }
+}
+
+function GeneratePlayers() {
+  decreaseButton.disabled = true;
+  increaseButton.disabled = true;
+}
+
+decreaseButton.addEventListener("click", DecreasePlayer);
+increaseButton.addEventListener("click", IncreasePlayer);
+startButton.addEventListener("click", GeneratePlayers);
+
+function tellPos(p) {
+  MousePositionX.innerHTML = "Position X: " + p.pageX;
+  MousePositionY.innerHTML = "Position Y: " + p.pageY;
+}
+addEventListener("mousemove", tellPos, false);
+
 
 function tileNumberToScreenPosition(number){
     tileIndex = number - 1;
