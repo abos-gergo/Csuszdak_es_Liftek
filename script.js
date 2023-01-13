@@ -3,7 +3,7 @@ var player1;
 var player2;
 
 function startGame() {
-    background = new GameObject(720, 720, "Assets/Background.png", 0, 0, "image");
+    background = new GameObject(1080, 1080, "Assets/Background.png", 0, 0, "image");
     player1 = new GameObject(30, 30, "green", 10, 120);
     player2 = new GameObject(100, 100, "red", 0, 620);
     myGameArea.start();
@@ -12,8 +12,8 @@ function startGame() {
 var myGameArea = {
     canvas : document.createElement("canvas"),
     start : function() {
-        this.canvas.width = 720;
-        this.canvas.height = 720;
+        this.canvas.width = 1920;
+        this.canvas.height = 1080;
         this.context = this.canvas.getContext("2d");
         this.context.imageSmoothingEnabled = false;
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
