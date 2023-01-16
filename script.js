@@ -16,7 +16,7 @@ var MousePositionY = document.querySelector("#y-position");
 MousePositionX.innerHTML = "Pozíció Y: ";
 
 function startGame() {
-  background = new GameObject(1080, 1080, "Assets/Background.png", 0, 0, "image");
+  background = new GameObject(1920, 1080, "Assets/Background.png", 0, 0, "image");
   player1 = new GameObject(30, 30, "green", 10, 120);
   player2 = new GameObject(100, 100, "red", 0, 620);
   myGameArea.start();
