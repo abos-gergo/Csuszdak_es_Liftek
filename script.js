@@ -1,6 +1,6 @@
 var background;
-var player1;
-var player2;
+var players = [];
+var currentPlayerIndex = 0;
 var number = 1;
 var text = document.querySelector("#number");
 text.innerHTML = `${number}db játékos`;
@@ -17,8 +17,9 @@ MousePositionX.innerHTML = "Pozíció Y: ";
 
 function startGame() {
   background = new GameObject(1920, 1080, "Assets/Background.png", 0, 0, "image");
-  player1 = new GameObject(30, 30, "green", 10, 120);
-  player2 = new GameObject(100, 100, "red", 0, 620);
+  players.push(new Player("blue"));
+  players.push(new Player("green"));
+  players.push(new Player("red"));
   myGameArea.start();
 }
 
@@ -59,11 +60,28 @@ function GameObject(width, height, color, x, y, type) {
   };
 }
 
+function Player(color) {
+    this.width = 50;
+    this.height = 50;
+    [this.x, this.y] = tileNumberToScreenPosition(1);
+    this.tileNumber = 1;
+  
+    this.update = function () {
+        ctx = myGameArea.context;
+        ctx.fillStyle = color;
+        
+        [this.x, this.y] = tileNumberToScreenPosition(this.tileNumber);
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    };
+  }
+
+
 function updateGameArea() {
   myGameArea.clear();
   background.update();
-  player1.update();
-  player2.update();
+  players.forEach(player => {
+    player.update();
+  });
 }
 
 function DecreasePlayer() {
@@ -106,4 +124,14 @@ function tileNumberToScreenPosition(number){
         tileX = 9 - tileX;
     }
     return [tileX * 108, tileFloor * 108];
+}
+
+function rollAndMove(){
+    randomNumber = Math.ceil(Math.random() * 6);
+    players[currentPlayerIndex].tileNumber += randomNumber;
+    currentPlayerIndex += 1;
+    if (currentPlayerIndex == players.length) {
+        currentPlayerIndex = 0;
+    }
+
 }
