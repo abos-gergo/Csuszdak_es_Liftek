@@ -2,6 +2,22 @@ var background;
 var players = [];
 var currentPlayerIndex = 0;
 var number = 1;
+var connections = [
+  new Connection(4, 25), 
+  new Connection(13, 46), 
+  new Connection(27, 5),
+  new Connection(33, 49), 
+  new Connection(40, 3),
+  new Connection(42, 63),
+  new Connection(43, 18),
+  new Connection(50, 69),
+  new Connection(54, 31),
+  new Connection(62, 81),
+  new Connection(66, 45),
+  new Connection(74, 92),
+  new Connection(76, 58),
+  new Connection(89, 53),
+  new Connection(99, 41)]
 var text = document.querySelector("#number");
 text.innerHTML = `${number}db játékos`;
 var decreaseButton = document.querySelector("#minus");
@@ -75,6 +91,11 @@ function Player(color) {
     };
   }
 
+function Connection(start, end) {
+  this.start = start;
+  this.end = end;
+}
+
 
 function updateGameArea() {
   myGameArea.clear();
@@ -103,7 +124,7 @@ function GeneratePlayers() {
   increaseButton.disabled = true;
 }
 
-decreaseButton.addEventListener("click", DecreasePlayer);
+decreaseButton.addEventListener("click", rollAndMove);
 increaseButton.addEventListener("click", IncreasePlayer);
 startButton.addEventListener("click", GeneratePlayers);
 
@@ -129,6 +150,12 @@ function tileNumberToScreenPosition(number){
 function rollAndMove(){
     randomNumber = Math.ceil(Math.random() * 6);
     players[currentPlayerIndex].tileNumber += randomNumber;
+    connections.forEach(connection => {
+      if (connection.start == players[currentPlayerIndex].tileNumber) {
+        players[currentPlayerIndex].tileNumber = connection.end;
+      }
+      
+    });
     currentPlayerIndex += 1;
     if (currentPlayerIndex == players.length) {
         currentPlayerIndex = 0;
