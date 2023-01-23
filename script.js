@@ -1,4 +1,5 @@
 var background;
+var playerCountDisplay;
 var connections = [
   new Connection(4, 25), 
   new Connection(13, 46), 
@@ -19,11 +20,15 @@ var playerCount = 1;
 var currentPlayerIndex = 0;
 var players = [];
 var mouse_position = [0, 0];
-var increasebtn = new Button(59, 59, 1122, 541);
-var decreasebtn = new Button(59, 59, 1276, 541);
+var buttons = [
+  new Button(59, 59, 1122, 541, DecreasePlayer),
+  new Button(59, 59, 1276, 541, IncreasePlayer),
+  new Button(765, 174, 1122, 606, null) //Norbi feladata a gomb működése
+];
 
 function startGame() {
   background = new GameObject(1920, 1080, "Assets/Background.png", 0, 0, "image");
+  playerCountDisplay = new GameObject(62, 62, "Assets/1.png", 1196, 541, "image");
   players.push(new Player("blue"));
   players.push(new Player("green"));
   players.push(new Player("red"));
@@ -45,17 +50,19 @@ var myGameArea = {
   },
 };
 
-function Button(width, height, x, y) {
+function Button(width, height, x, y, onclick) {
   this.width = width;
   this.height = height;
   this.x = x;
   this.y = y;
   this.x2 = x + width;
   this.y2 = y + height;
-  this.update = function () {
+  this.onclick = onclick;
+  this.clicked = function () {
     if (mouse_position[0] >= this.x && mouse_position[0] <= this.x2) {
       if (mouse_position[1] >= this.y && mouse_position[1] <= this.y2) {
-        // console.log("asd");
+        console.log(playerCount);
+        this.onclick();
       }
     }
   };
@@ -107,11 +114,11 @@ function Connection(start, end) {
 function updateGameArea() {
   myGameArea.clear();
   background.update();
+  playerCountDisplay.img.src = `Assets/${playerCount}.png`;
+  playerCountDisplay.update();
   players.forEach(player => {
     player.update();
   });
-  increasebtn.update();
-  decreasebtn.update();
 }
 
 function DecreasePlayer() {
@@ -128,7 +135,6 @@ function IncreasePlayer() {
 
 function tellPos(p) {
   mouse_position = [p.pageX, p.pageY];
-  console.log(`x: ${p.pageX}\ny: ${p.pageY}`);
 }
 addEventListener("mousemove", tellPos, false);
 
@@ -159,3 +165,11 @@ function rollAndMove(){
     }
 
 }
+
+function onclick() {
+  buttons.forEach(button => {
+    button.clicked();
+  });
+}
+
+addEventListener("click", onclick, false);
