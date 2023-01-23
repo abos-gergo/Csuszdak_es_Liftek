@@ -21,9 +21,9 @@ var currentPlayerIndex = 0;
 var players = [];
 var mouse_position = [0, 0];
 var buttons = [
-  new Button(59, 59, 1122, 541, DecreasePlayer),
-  new Button(59, 59, 1276, 541, IncreasePlayer),
-  new Button(765, 174, 1122, 606, null) //Norbi feladata a gomb működése
+  new Button(59, 59, 1122, 541, "Assets/Red_Left_Arrow.png", DecreasePlayer),
+  new Button(59, 59, 1276, 541, "Assets/Green_Right_Arrow.png", IncreasePlayer),
+  new Button(765, 174, 1122, 606, "Assets/Start.png", null) //Norbi feladata a gomb működése
 ];
 
 function startGame() {
@@ -50,13 +50,15 @@ var myGameArea = {
   },
 };
 
-function Button(width, height, x, y, onclick) {
+function Button(width, height, x, y, img_src, onclick) {
   this.width = width;
   this.height = height;
   this.x = x;
   this.y = y;
   this.x2 = x + width;
   this.y2 = y + height;
+  this.img = new Image();
+  this.img.src = img_src;
   this.onclick = onclick;
   this.clicked = function () {
     if (mouse_position[0] >= this.x && mouse_position[0] <= this.x2) {
@@ -66,6 +68,9 @@ function Button(width, height, x, y, onclick) {
       }
     }
   };
+  this.update = function () {
+    ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+  }
 }
 
 function GameObject(width, height, color, x, y, type) {
@@ -118,6 +123,9 @@ function updateGameArea() {
   playerCountDisplay.update();
   players.forEach(player => {
     player.update();
+  });
+  buttons.forEach(button => {
+    button.update();
   });
 }
 
