@@ -1,10 +1,10 @@
 var background;
 var playerCountDisplay;
 var connections = [
-  new Connection(4, 25), 
-  new Connection(13, 46), 
+  new Connection(4, 25),
+  new Connection(13, 46),
   new Connection(27, 5),
-  new Connection(33, 49), 
+  new Connection(33, 49),
   new Connection(40, 3),
   new Connection(42, 63),
   new Connection(43, 18),
@@ -60,16 +60,31 @@ function Button(width, height, x, y, img_src, onclick) {
   this.img = new Image();
   this.img.src = img_src;
   this.onclick = onclick;
-  this.clicked = function () {
+  this.clicked = false;
+  this.mouse_over = function () {
     if (mouse_position[0] >= this.x && mouse_position[0] <= this.x2) {
       if (mouse_position[1] >= this.y && mouse_position[1] <= this.y2) {
-        console.log(playerCount);
-        this.onclick();
+        return true;
       }
+    }
+    return false;
+  }
+  this.clicked = function () {
+    if (this.mouse_over()) {
+      this.onclick();
     }
   };
   this.update = function () {
-    ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+    if (this.mouse_over()) {
+      if (!this.clicked) {
+        ctx.drawImage(this.img, this.x - 1, this.y + 1, this.width, this.height);
+      } else {
+        ctx.drawImage(this.img, this.x + 3, this.y - 3, this.width, this.height);
+      }
+    } else {
+      ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+    }
+    //self.clicked_interval =- 0.05;
   }
 }
 
@@ -96,19 +111,19 @@ function GameObject(width, height, color, x, y, type) {
 }
 
 function Player(color) {
-    this.width = 50;
-    this.height = 50;
-    [this.x, this.y] = tileNumberToScreenPosition(1);
-    this.tileNumber = 1;
-  
-    this.update = function () {
-        ctx = myGameArea.context;
-        ctx.fillStyle = color;
-        
-        [this.x, this.y] = tileNumberToScreenPosition(this.tileNumber);
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-    };
-  }
+  this.width = 50;
+  this.height = 50;
+  [this.x, this.y] = tileNumberToScreenPosition(1);
+  this.tileNumber = 1;
+
+  this.update = function () {
+    ctx = myGameArea.context;
+    ctx.fillStyle = color;
+
+    [this.x, this.y] = tileNumberToScreenPosition(this.tileNumber);
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+  };
+}
 
 function Connection(start, end) {
   this.start = start;
@@ -146,31 +161,31 @@ function tellPos(p) {
 }
 addEventListener("mousemove", tellPos, false);
 
-function tileNumberToScreenPosition(number){
-    tileIndex = number - 1;
-    tileY = Math.floor(tileIndex / 10);
-    tileFloor = 9 - tileY;
+function tileNumberToScreenPosition(number) {
+  tileIndex = number - 1;
+  tileY = Math.floor(tileIndex / 10);
+  tileFloor = 9 - tileY;
 
-    tileX = (tileIndex % 10);
-    if (tileFloor % 2 == 0){
-        tileX = 9 - tileX;
-    }
-    return [tileX * 108, tileFloor * 108];
+  tileX = (tileIndex % 10);
+  if (tileFloor % 2 == 0) {
+    tileX = 9 - tileX;
+  }
+  return [tileX * 108, tileFloor * 108];
 }
 
-function rollAndMove(){
-    randomNumber = Math.ceil(Math.random() * 6);
-    players[currentPlayerIndex].tileNumber += randomNumber;
-    connections.forEach(connection => {
-      if (connection.start == players[currentPlayerIndex].tileNumber) {
-        players[currentPlayerIndex].tileNumber = connection.end;
-      }
-      
-    });
-    currentPlayerIndex += 1;
-    if (currentPlayerIndex == players.length) {
-        currentPlayerIndex = 0;
+function rollAndMove() {
+  randomNumber = Math.ceil(Math.random() * 6);
+  players[currentPlayerIndex].tileNumber += randomNumber;
+  connections.forEach(connection => {
+    if (connection.start == players[currentPlayerIndex].tileNumber) {
+      players[currentPlayerIndex].tileNumber = connection.end;
     }
+
+  });
+  currentPlayerIndex += 1;
+  if (currentPlayerIndex == players.length) {
+    currentPlayerIndex = 0;
+  }
 
 }
 
