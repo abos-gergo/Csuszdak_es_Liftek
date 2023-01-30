@@ -22,17 +22,21 @@ var players = [];
 var mouse_position = [0, 0];
 var buttons = [
   new Button(59, 59, 1122, 541, "Assets/Red_Left_Arrow.png", DecreasePlayer),
-  new Button(59, 59, 1276, 541, "Assets/Green_Right_Arrow.png", IncreasePlayer),
-  new Button(765, 174, 1122, 606, "Assets/Start.png", null) //Norbi feladata a gomb működése
+  new Button(59, 59, 1276, 541, "Assets/Green_Right_Arrow.png", IncreasePlayer ),
+  new Button(765, 174, 1122, 606, "Assets/Start.png", PlayerGenerate  ) //Norbi feladata a gomb működése
 ];
 
 function startGame() {
   background = new GameObject(1920, 1080, "Assets/Background.png", 0, 0, "image");
   playerCountDisplay = new GameObject(62, 62, "Assets/1.png", 1196, 541, "image");
-  players.push(new Player("blue"));
-  players.push(new Player("green"));
-  players.push(new Player("red"));
   myGameArea.start();
+}
+
+function PlayerGenerate(){
+  for (let i = 0; i < playerCount; i++) {
+    playerCount * players.push(new Player("green"));
+    
+  }
 }
 
 var myGameArea = {
