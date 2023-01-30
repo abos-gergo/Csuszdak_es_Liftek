@@ -23,7 +23,7 @@ var mouse_position = [0, 0];
 var buttons = [
   new Button(59, 59, 1122, 541, "Assets/Red_Left_Arrow.png", DecreasePlayer),
   new Button(59, 59, 1276, 541, "Assets/Green_Right_Arrow.png", IncreasePlayer),
-  new Button(765, 174, 1122, 606, "Assets/Start.png", null) //Norbi feladata a gomb működése
+  new Button(765, 174, 1122, 606, "Assets/Start.png", rollAndMove) //Norbi feladata a gomb működése
 ];
 
 function startGame() {
@@ -32,7 +32,19 @@ function startGame() {
   players.push(new Player("blue"));
   players.push(new Player("green"));
   players.push(new Player("red"));
+  players.push(new Player("black"));
+  players.push(new Player("aqua"));
+  players.push(new Player("brown"));
+  players.push(new Player("white"));
+  players.push(new Player("cyan"));
+  players.push(new Player("yellow"));
+  players.push(new Player("beige"));
+  players.push(new Player("purple"));
+  players.push(new Player("orange"));
+  players.push(new Player("lightblue"));
+  players.push(new Player("darkblue"));
   myGameArea.start();
+
 }
 
 var myGameArea = {
@@ -115,11 +127,12 @@ function Player(color) {
   this.height = 50;
   [this.x, this.y] = tileNumberToScreenPosition(1);
   this.tileNumber = 1;
+  this.targetTileNumber = 1;
 
   this.update = function () {
     ctx = myGameArea.context;
     ctx.fillStyle = color;
-
+    this.tileNumber = moveTovards(this.tileNumber, this.targetTileNumber, 0.1);
     [this.x, this.y] = tileNumberToScreenPosition(this.tileNumber);
     ctx.fillRect(this.x, this.y, this.width, this.height);
   };
@@ -175,13 +188,14 @@ function tileNumberToScreenPosition(number) {
 
 function rollAndMove() {
   randomNumber = Math.ceil(Math.random() * 6);
-  players[currentPlayerIndex].tileNumber += randomNumber;
-  connections.forEach(connection => {
-    if (connection.start == players[currentPlayerIndex].tileNumber) {
-      players[currentPlayerIndex].tileNumber = connection.end;
-    }
+  players[currentPlayerIndex].targetTileNumber += randomNumber;
+  // connections.forEach(connection => {
+  //   if (connection.start == players[currentPlayerIndex].targetTileNumber) {
+  //     players[currentPlayerIndex].targetTileNumber = connection.end;
+  //   }
 
-  });
+  // });
+  console.log(`Player ${currentPlayerIndex}: ${players[currentPlayerIndex].targetTileNumber}`);
   currentPlayerIndex += 1;
   if (currentPlayerIndex == players.length) {
     currentPlayerIndex = 0;
@@ -196,3 +210,15 @@ function onclick() {
 }
 
 addEventListener("click", onclick, false);
+
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function moveTovards(a, b, v) {
+  if (a + v > b) {
+    return b;
+  }
+  return a + v;
+}
