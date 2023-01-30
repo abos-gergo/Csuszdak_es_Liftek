@@ -1,5 +1,5 @@
 var background;
-var playerCountDisplay;
+var gameStarted = false;
 var connections = [
   new Connection(4, 25),
   new Connection(13, 46),
@@ -21,23 +21,25 @@ var currentPlayerIndex = 0;
 var players = [];
 var mouse_position = [0, 0];
 var buttons = [
-  new Button(59, 59, 1122, 541, "Assets/Red_Left_Arrow.png", DecreasePlayer),
-  new Button(59, 59, 1276, 541, "Assets/Green_Right_Arrow.png", IncreasePlayer ),
-  new Button(765, 174, 1122, 606, "Assets/Start.png", PlayerGenerate  ) //Norbi feladata a gomb működése
+  new Button(59, 59, 1119, 541, "Assets/Red_Left_Arrow.png", DecreasePlayer),
+  new Button(59, 59, 1273, 541, "Assets/Green_Right_Arrow.png", IncreasePlayer),
+  new Button(765, 174, 1119, 606, "Assets/Start.png", PlayerGenerate) //Norbi feladata a gomb működése
 ];
+var gameObjects = [new GameObject(62, 62, "Assets/1.png", 1194, 541, "image"), new GameObject(540, 58, "Assets/Jatekos.png", 1344, 542, "image")];
 
-function startGame() {
+function initialize() {
   background = new GameObject(1920, 1080, "Assets/Background.png", 0, 0, "image");
-  playerCountDisplay = new GameObject(62, 62, "Assets/1.png", 1196, 541, "image");
   myGameArea.start();
 
 }
 
-function PlayerGenerate(){
+function PlayerGenerate() {
   for (let i = 0; i < playerCount; i++) {
     playerCount * players.push(new Player("green"));
-    
   }
+  buttons = [new Button(765, 174, 1119, 876, "Assets/Roll.png", rollAndMove)];
+  gameObjects = [];
+  gameStarted = true;
 }
 
 var myGameArea = {
@@ -121,18 +123,25 @@ function Player(color) {
   [this.x, this.y] = tileNumberToScreenPosition(1);
   this.tileNumber = 1;
   this.targetTileNumber = 1;
+  this.opacity = 1;
 
   this.update = function () {
     ctx = myGameArea.context;
     ctx.fillStyle = color;
+    console.log(this.opacity);
     connections.forEach(connection => {
-      if (connection.start == this.faszHossz && connection.start == this.targetTileNumber) {
-
-        players[currentPlayerIndex].tileNumber = connection.end;
-        players[currentPlayerIndex].targetTileNumber = connection.end;
+      if (connection.start == this.tileNumber && connection.start == this.targetTileNumber) {
+        this.opacity = moveTovards(this.opacity, 0, 0.11);
+        if (this.opacity == 0) {
+          this.tileNumber = connection.end;
+          this.targetTileNumber = connection.end;
+        }
+      }
+      else if (connection.end == this.targetTileNumber) {
+        this.opacity = moveTovards(this.opacity, 1, 0.11);
       }
     });
-    this.tileNumber = moveTovards(this.tileNumber, this.targetTileNumber, 0.1);
+    this.tileNumber = moveTovards(this.tileNumber, this.targetTileNumber, 0.15);
     if (this.tileNumber % 1 != 0) {
       let prevTile = tileNumberToScreenPosition(Math.floor(this.tileNumber));
       let nextTile = tileNumberToScreenPosition(Math.ceil(this.tileNumber));
@@ -141,7 +150,9 @@ function Player(color) {
     else {
       [this.x, this.y] = tileNumberToScreenPosition(this.tileNumber);
     }
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.globalAlpha = this.opacity;
+    ctx.fillRect(this.x, this.y + (Math.abs((this.tileNumber % 1) - 0.5) - 0.5) * 20, this.width, this.height);
+    ctx.globalAlpha = 1;
   };
 }
 
@@ -154,8 +165,12 @@ function Connection(start, end) {
 function updateGameArea() {
   myGameArea.clear();
   background.update();
-  playerCountDisplay.img.src = `Assets/${playerCount}.png`;
-  playerCountDisplay.update();
+  if (!gameStarted) {
+    gameObjects[0].img.src = `Assets/${playerCount}.png`;
+  }
+  gameObjects.forEach(gameObject => {
+    gameObject.update();
+  });
   players.forEach(player => {
     player.update();
   });
@@ -219,8 +234,20 @@ function lerp(a, b, t) {
 }
 
 function moveTovards(a, b, v) {
-  if (a + v > b) {
-    return b;
+  let difference = Math.abs(a - b);
+  if (difference < 1) {
+    v = v / 2
   }
-  return a + v;
+  if (b > a) {
+    if (a + v > b) {
+      return b;
+    }
+    return a + v;
+  }
+  else {
+    if (a - v < b) {
+      return b;
+    }
+    return a - v;
+  }
 }
