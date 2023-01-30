@@ -30,6 +30,7 @@ function startGame() {
   background = new GameObject(1920, 1080, "Assets/Background.png", 0, 0, "image");
   playerCountDisplay = new GameObject(62, 62, "Assets/1.png", 1196, 541, "image");
   myGameArea.start();
+
 }
 
 function PlayerGenerate(){
@@ -119,12 +120,27 @@ function Player(color) {
   this.height = 50;
   [this.x, this.y] = tileNumberToScreenPosition(1);
   this.tileNumber = 1;
+  this.targetTileNumber = 1;
 
   this.update = function () {
     ctx = myGameArea.context;
     ctx.fillStyle = color;
+    connections.forEach(connection => {
+      if (connection.start == this.faszHossz && connection.start == this.targetTileNumber) {
 
-    [this.x, this.y] = tileNumberToScreenPosition(this.tileNumber);
+        players[currentPlayerIndex].tileNumber = connection.end;
+        players[currentPlayerIndex].targetTileNumber = connection.end;
+      }
+    });
+    this.tileNumber = moveTovards(this.tileNumber, this.targetTileNumber, 0.1);
+    if (this.tileNumber % 1 != 0) {
+      let prevTile = tileNumberToScreenPosition(Math.floor(this.tileNumber));
+      let nextTile = tileNumberToScreenPosition(Math.ceil(this.tileNumber));
+      [this.x, this.y] = lerp(prevTile, nextTile, this.tileNumber % 1);
+    }
+    else {
+      [this.x, this.y] = tileNumberToScreenPosition(this.tileNumber);
+    }
     ctx.fillRect(this.x, this.y, this.width, this.height);
   };
 }
@@ -179,13 +195,7 @@ function tileNumberToScreenPosition(number) {
 
 function rollAndMove() {
   randomNumber = Math.ceil(Math.random() * 6);
-  players[currentPlayerIndex].tileNumber += randomNumber;
-  connections.forEach(connection => {
-    if (connection.start == players[currentPlayerIndex].tileNumber) {
-      players[currentPlayerIndex].tileNumber = connection.end;
-    }
-
-  });
+  players[currentPlayerIndex].targetTileNumber += randomNumber;
   currentPlayerIndex += 1;
   if (currentPlayerIndex == players.length) {
     currentPlayerIndex = 0;
@@ -200,3 +210,17 @@ function onclick() {
 }
 
 addEventListener("click", onclick, false);
+
+
+function lerp(a, b, t) {
+  let e0 = a[0] + (b[0] - a[0]) * t;
+  let e1 = a[1] + (b[1] - a[1]) * t;
+  return [e0, e1];
+}
+
+function moveTovards(a, b, v) {
+  if (a + v > b) {
+    return b;
+  }
+  return a + v;
+}
