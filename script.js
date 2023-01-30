@@ -120,15 +120,12 @@ function Player(color) {
     ctx = myGameArea.context;
     ctx.fillStyle = color;
     connections.forEach(connection => {
-      if (connection.start == this.tileNumber && connection.start == this.targetTileNumber) {
+      if (connection.start == this.faszHossz && connection.start == this.targetTileNumber) {
 
         players[currentPlayerIndex].tileNumber = connection.end;
         players[currentPlayerIndex].targetTileNumber = connection.end;
       }
     });
-    if (color == "red") {
-      console.log(this.tileNumber);
-    };
     this.tileNumber = moveTovards(this.tileNumber, this.targetTileNumber, 0.1);
     if (this.tileNumber % 1 != 0) {
       let prevTile = tileNumberToScreenPosition(Math.floor(this.tileNumber));
