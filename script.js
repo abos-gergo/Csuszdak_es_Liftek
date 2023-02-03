@@ -1,5 +1,6 @@
 var background;
 var gameStarted = false;
+var animationOngoing = -1;
 var connections = [
   new Connection(4, 25),
   new Connection(13, 46),
@@ -18,6 +19,7 @@ var connections = [
   new Connection(99, 41)];
 var playerCount = 1;
 var currentPlayerIndex = 0;
+var winner = -1;
 var players = [];
 var mouse_position = [0, 0];
 var buttons = [
@@ -35,10 +37,10 @@ function initialize() {
 
 function PlayerGenerate() {
   for (let i = 0; i < playerCount; i++) {
-    playerCount * players.push(new Player("green"));
+    playerCount * players.push(new Player(`Assets/Player${i + 1}right.png`, i));
   }
   buttons = [new Button(765, 174, 1119, 876, "Assets/Roll.png", rollAndMove)];
-  gameObjects = [];
+  gameObjects = [new GameObject(300, 300, "Assets/Player1right.png", 1144, 541, "image")];
   gameStarted = true;
 }
 
@@ -67,7 +69,7 @@ function Button(width, height, x, y, img_src, onclick) {
   this.img = new Image();
   this.img.src = img_src;
   this.onclick = onclick;
-  this.clicked = false;
+  this.opacity = 1;
   this.mouse_over = function () {
     if (mouse_position[0] >= this.x && mouse_position[0] <= this.x2) {
       if (mouse_position[1] >= this.y && mouse_position[1] <= this.y2) {
@@ -77,21 +79,24 @@ function Button(width, height, x, y, img_src, onclick) {
     return false;
   }
   this.clicked = function () {
-    if (this.mouse_over()) {
+    if (this.mouse_over() && animationOngoing == -1) {
       this.onclick();
     }
   };
   this.update = function () {
-    if (this.mouse_over()) {
-      if (!this.clicked) {
-        ctx.drawImage(this.img, this.x - 1, this.y + 1, this.width, this.height);
-      } else {
-        ctx.drawImage(this.img, this.x + 3, this.y - 3, this.width, this.height);
-      }
+    if (animationOngoing != -1) {
+      this.opacity = 0.7;
+    }
+    else {
+      this.opacity = 1;
+    }
+    ctx.globalAlpha = this.opacity;
+    if (this.mouse_over() && animationOngoing == -1) {
+      ctx.drawImage(this.img, this.x + 3, this.y - 3, this.width, this.height);
     } else {
       ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
     }
-    //self.clicked_interval =- 0.05;
+    ctx.globalAlpha = 1;
   }
 }
 
@@ -105,11 +110,14 @@ function GameObject(width, height, color, x, y, type) {
   this.height = height;
   this.x = x;
   this.y = y;
+  this.opacity = 1;
 
   this.update = function () {
     ctx = myGameArea.context;
     if (this.type == "image") {
+      ctx.globalAlpha = this.opacity;
       ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+      ctx.globalAlpha = 1;
     } else {
       ctx.fillStyle = color;
       ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -117,41 +125,69 @@ function GameObject(width, height, color, x, y, type) {
   };
 }
 
-function Player(color) {
+function Player(color, index) {
+  this.img = new Image();
+  this.img.src = color;
   this.width = 50;
   this.height = 50;
   [this.x, this.y] = tileNumberToScreenPosition(1);
-  this.tileNumber = 1;
-  this.targetTileNumber = 1;
+  this.tileNumber = 98;
+  this.targetTileNumber = 98;
   this.opacity = 1;
+  this.index = index;
+  this.direction = "right";
 
   this.update = function () {
     ctx = myGameArea.context;
-    ctx.fillStyle = color;
-    console.log(this.opacity);
-    connections.forEach(connection => {
-      if (connection.start == this.tileNumber && connection.start == this.targetTileNumber) {
-        this.opacity = moveTovards(this.opacity, 0, 0.11);
-        if (this.opacity == 0) {
-          this.tileNumber = connection.end;
-          this.targetTileNumber = connection.end;
-        }
-      }
-      else if (connection.end == this.targetTileNumber) {
-        this.opacity = moveTovards(this.opacity, 1, 0.11);
-      }
-    });
-    this.tileNumber = moveTovards(this.tileNumber, this.targetTileNumber, 0.15);
-    if (this.tileNumber % 1 != 0) {
-      let prevTile = tileNumberToScreenPosition(Math.floor(this.tileNumber));
-      let nextTile = tileNumberToScreenPosition(Math.ceil(this.tileNumber));
-      [this.x, this.y] = lerp(prevTile, nextTile, this.tileNumber % 1);
+    let inAnimation = false;
+    if (winner == this.index && this.tileNumber == 100) {
+      this.width = moveTovards(this.width, 790, 10);
+      this.height = moveTovards(this.height, 790, 10);
+      this.x = moveTovards(this.x, 555, 7.5);
     }
     else {
-      [this.x, this.y] = tileNumberToScreenPosition(this.tileNumber);
+      this.tileNumber = moveTovards(this.tileNumber, this.targetTileNumber, 0.15);
+      if (this.tileNumber % 1 != 0) {
+        let prevTile = tileNumberToScreenPosition(Math.floor(this.tileNumber));
+        let nextTile = tileNumberToScreenPosition(Math.ceil(this.tileNumber));
+        [this.x, this.y] = lerp(prevTile, nextTile, this.tileNumber % 1);
+      }
+      else {
+        [this.x, this.y] = tileNumberToScreenPosition(this.tileNumber);
+      }
+      connections.forEach(connection => {
+        if (connection.start == this.tileNumber && connection.start == this.targetTileNumber) {
+          inAnimation = true;
+          this.opacity = moveTovards(this.opacity, 0, 0.11);
+          if (this.opacity == 0) {
+            this.tileNumber = connection.end;
+            this.targetTileNumber = connection.end;
+          }
+        }
+        else if (connection.end == this.targetTileNumber) {
+          this.opacity = moveTovards(this.opacity, 1, 0.11);
+          if (this.opacity != 1) {
+            inAnimation = true;
+          }
+        }
+      });
     }
+    if (Math.floor((this.tileNumber - 1) / 10) % 2 == 0) {
+      this.direction = "right";
+    }
+    else {
+      this.direction = "left";
+    }
+    if (inAnimation || this.tileNumber != this.targetTileNumber) {
+      animationOngoing = this.index;
+    }
+    else if (animationOngoing == this.index) {
+      animationOngoing = -1;
+      gameObjects[0].img.src = `Assets/Player${currentPlayerIndex + 1}right.png`;
+    }
+    this.img.src = `Assets/Player${this.index + 1}${this.direction}.png`;
     ctx.globalAlpha = this.opacity;
-    ctx.fillRect(this.x, this.y + (Math.abs((this.tileNumber % 1) - 0.5) - 0.5) * 20, this.width, this.height);
+    ctx.drawImage(this.img, this.x + 25, this.y + 50 + (Math.abs((this.tileNumber % 1) - 0.5) - 0.5) * 20, this.width, this.height);
     ctx.globalAlpha = 1;
   };
 }
@@ -167,6 +203,15 @@ function updateGameArea() {
   background.update();
   if (!gameStarted) {
     gameObjects[0].img.src = `Assets/${playerCount}.png`;
+  }
+  if (winner != -1) {
+    background.opacity = moveTovards(background.opacity, 0, 0.015);
+    gameObjects.forEach(gameObject => {
+      gameObject.opacity = moveTovards(gameObject.opacity, 0, 0.015);
+    });
+    buttons.forEach(button => {
+      button.opacity = moveTovards(button.opacity, 0, 0.015);
+    });
   }
   gameObjects.forEach(gameObject => {
     gameObject.update();
@@ -210,12 +255,17 @@ function tileNumberToScreenPosition(number) {
 
 function rollAndMove() {
   randomNumber = Math.ceil(Math.random() * 6);
-  players[currentPlayerIndex].targetTileNumber += randomNumber;
+  if (players[currentPlayerIndex].targetTileNumber + randomNumber < 100) {
+    players[currentPlayerIndex].targetTileNumber += randomNumber;
+  }
+  else {
+    players[currentPlayerIndex].targetTileNumber = 100;
+    winner = currentPlayerIndex;
+  }
   currentPlayerIndex += 1;
   if (currentPlayerIndex == players.length) {
     currentPlayerIndex = 0;
   }
-
 }
 
 function onclick() {
