@@ -87,7 +87,7 @@ function Button(width, height, x, y, img_src, onclick) {
     if (animationOngoing != -1) {
       this.opacity = 0.7;
     }
-    else {
+    else if (winner == -1) {
       this.opacity = 1;
     }
     ctx.globalAlpha = this.opacity;
@@ -131,8 +131,8 @@ function Player(color, index) {
   this.width = 50;
   this.height = 50;
   [this.x, this.y] = tileNumberToScreenPosition(1);
-  this.tileNumber = 98;
-  this.targetTileNumber = 98;
+  this.tileNumber = 1;
+  this.targetTileNumber = 1;
   this.opacity = 1;
   this.index = index;
   this.direction = "right";
@@ -185,9 +185,12 @@ function Player(color, index) {
       animationOngoing = -1;
       gameObjects[0].img.src = `Assets/Player${currentPlayerIndex + 1}right.png`;
     }
+    if (winner != -1 && winner != this.index) {
+      this.opacity = moveTovards(this.opacity, 0, 0.11);
+    }
     this.img.src = `Assets/Player${this.index + 1}${this.direction}.png`;
     ctx.globalAlpha = this.opacity;
-    ctx.drawImage(this.img, this.x + 25, this.y + 50 + (Math.abs((this.tileNumber % 1) - 0.5) - 0.5) * 20, this.width, this.height);
+    ctx.drawImage(this.img, this.x + (this.index - 1) * 5 + 25, this.y + 50 + (Math.abs((this.tileNumber % 1) - 0.5) - 0.5) * 20, this.width, this.height);
     ctx.globalAlpha = 1;
   };
 }
@@ -210,7 +213,7 @@ function updateGameArea() {
       gameObject.opacity = moveTovards(gameObject.opacity, 0, 0.015);
     });
     buttons.forEach(button => {
-      button.opacity = moveTovards(button.opacity, 0, 0.015);
+      button.opacity = moveTovards(button.opacity, 0, 0.0125);
     });
   }
   gameObjects.forEach(gameObject => {
